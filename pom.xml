@@ -30,82 +30,145 @@
 		<java.version>25</java.version>
 		<spring-cloud.version>2025.0.2</spring-cloud.version>
 	</properties>
+	<!-- Dependencies -->
 	<dependencies>
+		<!-- Spring Boot Actuator -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<!-- End Spring Boot Actuator -->
+
+		<!-- Spring Boot Data JPA -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		<!-- End Spring Boot Data JPA -->
+
+		<!-- Spring Boot OAuth2 Resource Server -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
+		<!-- End Spring Boot OAuth2 Resource Server -->
+
+		<!-- Spring Boot Security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<!-- End Spring Boot Security -->
+
+		<!-- Spring Boot Validation -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
+		<!-- End Spring Boot Validation -->
+
+		<!-- Spring Boot Web -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<!-- End Spring Boot Web -->
+
+		<!-- SpringDoc OpenAPI -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.8.16</version>
 		</dependency>
+		<!-- End SpringDoc OpenAPI -->
+		
+		<!-- Spring Cloud OpenFeign -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
+		<!-- End Spring Cloud OpenFeign -->
+
+		<!-- Spring Kafka -->
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
+		<!-- End Spring Kafka -->
 
+		<!-- Spring Boot DevTools -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
+		<!-- End Spring Boot DevTools -->
+
+		<!-- Spring Boot Docker Compose -->
+		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-docker-compose</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
-		</dependency>
+		</dependency> -->
+		<!-- End Spring Boot Docker Compose -->
+
+		<!-- Spring Boot PostgreSQL -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- End Spring Boot PostgreSQL -->
+
+		<!-- Spring Boot Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- End Spring Boot Lombok -->
+
+		<!-- Spring Boot Starter Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- End Spring Boot Starter Test -->
+
+		<!-- Spring Kafka Test -->
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- End Spring Kafka Test -->
+
+		<!-- Spring Security Test -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- End Spring Security Test -->
+
+		<!-- Spring Boot Flyway -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<!-- <artifactId>flyway-core</artifactId> -->
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+		<!-- End Spring Boot Flyway -->
+
+		<!-- Spring Boot JDBC -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<!-- End Spring Boot JDBC -->
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
