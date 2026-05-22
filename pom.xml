@@ -106,12 +106,12 @@
 		<!-- End Spring Boot DevTools -->
 
 		<!-- Spring Boot Docker Compose -->
-		<!-- <dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-docker-compose</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
-		</dependency> -->
+		</dependency>
 		<!-- End Spring Boot Docker Compose -->
 
 		<!-- Spring Boot PostgreSQL -->
@@ -162,12 +162,29 @@
 		</dependency>
 		<!-- End Spring Boot Flyway -->
 
+		<!-- JWT -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>10.9</version>
+		</dependency>
+		<!-- End JWT -->
+
 		<!-- Spring Boot JDBC -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<!-- End Spring Boot JDBC -->
+
+		<!-- Spring Dot-env -->
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>spring-dotenv</artifactId>
+			<version>5.1.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- End Spring Dot-env -->
 
 	</dependencies>
 	<dependencyManagement>

@@ -1,33 +1,13 @@
 package com.cip.payment_gateway.service;
 
-// Repository
-import com.cip.payment_gateway.repository.TransactionRepository;
-// Model
-import com.cip.payment_gateway.model.Transactions;
-// DTO  
 import com.cip.payment_gateway.dto.request.PaymentRequest;
 import com.cip.payment_gateway.dto.response.PaymentResponse;
-// Enums
-import com.cip.payment_gateway.enums.TransactionChannel;
-import com.cip.payment_gateway.enums.TransactionStatus;
-// Other imports
-import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
+import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
-public class PaymentService {
-    // Repository injection
-    private final TransactionRepository transactionRepository;
+public interface PaymentService {
+    // Create a new payment transaction
+    PaymentResponse createPayment(PaymentRequest request);
 
-    /* Services */
-    // Process payment
-    public PaymentResponse processPayment(PaymentRequest request) {
-        //
-    }
-
-    // Get payment by ID
-    public PaymentResponse getPayment(String id) {
-        //
-    }
+    // Retrieve the status of a transaction
+    PaymentResponse getPayment(UUID id);
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -25,16 +26,14 @@ public class PaymentController {
 
     // POST /api/payments
     @PostMapping
-    public ResponseEntity<PaymentResponse> processPayment(@RequestBody PaymentRequest request) {
-        // Implementation for processing payment
-        PaymentResponse response = paymentService.processPayment(request);
+    public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest request) {
+        PaymentResponse response = paymentService.createPayment(request);
         return ResponseEntity.ok(response);
     }
 
     // GET /api/payments/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<PaymentResponse> getPayment(@PathVariable String id) {
-        // Implementation for retrieving payment
+    public ResponseEntity<PaymentResponse> getPayment(@PathVariable UUID id) {
         PaymentResponse response = paymentService.getPayment(id);
         return ResponseEntity.ok(response);
     }
