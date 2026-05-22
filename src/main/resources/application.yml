@@ -1,0 +1,70 @@
+spring:
+    application:
+        name: payment-gateway
+
+    datasource:
+        url: jdbc:postgresql://localhost:5432/payment_gateway_cip
+        username: postgres
+        password: fahmi123
+
+    jpa:
+        hibernate:
+            ddl-auto: validate
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+
+    flyway:
+        enabled: true
+        locations: classpath:db/migration
+
+    kafka:
+        bootstrap-servers: localhost:9092
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.apache.kafka.common.serialization.StringSerializer
+        consumer:
+            group-id: payment-gateway-group
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+            spring:
+                json:
+                    trusted:
+                        packages: "*"
+
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    secret-key: b6decf55008b9cb6177d0acc63a9573cb6decf55008b9cb6177d0acc63a9573c
+
+    docker:
+        compose:
+            enabled: false
+
+management:
+    endpoint:
+        health:
+            show-details: always
+
+    endpoints:
+        web:
+            exposure:
+                include: health,info
+
+logging:
+    file:
+        name: logs/payment-gateway.log
+    level:
+        root: INFO
+
+corebank:
+    url: http://localhost:8080
+
+biller:
+    url: http://localhost:8080
+
+debug: true
