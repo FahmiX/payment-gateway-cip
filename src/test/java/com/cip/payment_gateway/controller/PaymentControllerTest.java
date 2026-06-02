@@ -76,6 +76,22 @@ class PaymentControllerTest {
                 .build();
     }
 
+    /* 
+    * Test Scope
+        * 1. Create Payment
+            - If request without authentication, it will return 403
+            - If all request is valid, it will return success response with data
+            - If corebank fails, it will return failed status with message
+            - If orderId is duplicate, it will return idempotently with message
+            - If content type is wrong (Not application/json), it will return unsupported media type
+            - If request body is empty, it will return bad request
+        * 2. Get Payment
+            - If transaction found, it will return payment response with data
+            - If transaction not found, it will return not found message
+            - If UUID is invalid, it will return bad request
+            - If request without authentication, it will return unauthorized
+    */
+
     @Nested
     @DisplayName("POST /api/payments")
     class CreatePayment {

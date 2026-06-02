@@ -2,11 +2,15 @@ package com.cip.payment_gateway.service;
 
 import com.cip.payment_gateway.client.BillerFeignClient;
 import com.cip.payment_gateway.client.CoreBankFeignClient;
+import com.cip.payment_gateway.dto.request.BillerRequest;
+import com.cip.payment_gateway.dto.request.CoreBankRequest;
 import com.cip.payment_gateway.dto.request.PaymentRequest;
 import com.cip.payment_gateway.dto.response.BillerResponse;
 import com.cip.payment_gateway.dto.response.CoreBankResponse;
 import com.cip.payment_gateway.dto.response.PaymentResponse;
 import com.cip.payment_gateway.enums.TransactionStatus;
+import com.cip.payment_gateway.exception.DuplicateOrderException;
+import com.cip.payment_gateway.exception.ResourceNotFoundException;
 import com.cip.payment_gateway.model.Transactions;
 import com.cip.payment_gateway.repository.TransactionRepository;
 import com.cip.payment_gateway.service.impl.PaymentServiceImpl;
@@ -23,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -87,6 +92,21 @@ class PaymentServiceTest {
                 .build();
     }
 
+    /*
+     * Test Scope
+     * createPayment() scenarios:
+     1. Test duplicate payment (orderId already exists) -> expect DuplicateOrderException
+     2. Test successful payment flow (CoreBank and Biller succeed) -> payment success and expect success response
+     3. Test CoreBank Failed (insufficient balance) -> transaction marked as failed, expect failed response, and won't call Biller
+     4. Test Biller Failed -> transaction marked as failed, expect failed response
+     5. Test CoreBank called with correct amount
+     6. Test Biller called with correct payload
+
+     * getPayment() scenarios:
+     1. Test find transaction by id, it will return payment response
+     2. Test find transaction by unknown id, it will return not found message
+     */
+
     @Nested
     @DisplayName("createPayment()")
     class CreatePayment {
@@ -98,8 +118,8 @@ class PaymentServiceTest {
             try {
                 paymentService.createPayment(validRequest);
             } catch (Exception ex) {
-                assertThat(ex).isInstanceOf(com.cip.payment_gateway.exception.DuplicateOrderException.class);
-                assertThat(ex.getMessage()).isEqualTo("Payment already processed");
+                assertThat(ex).isInstanceOf(DuplicateOrderException.class);
+                assertThat(ex.getMessage()).isEqualTo("Payment already exists for orderId: ORDER-001");
             }
 
             // Prevent Call CoreBank and Biller
@@ -202,8 +222,8 @@ class PaymentServiceTest {
 
             paymentService.createPayment(validRequest);
 
-            ArgumentCaptor<com.cip.payment_gateway.dto.request.CoreBankRequest> captor = ArgumentCaptor
-                    .forClass(com.cip.payment_gateway.dto.request.CoreBankRequest.class);
+            ArgumentCaptor<CoreBankRequest> captor = ArgumentCaptor
+                    .forClass(CoreBankRequest.class);
             verify(coreBankClient).debit(captor.capture());
 
             assertThat(captor.getValue().getAccount()).isEqualTo("1234567890");
@@ -227,8 +247,8 @@ class PaymentServiceTest {
 
             paymentService.createPayment(validRequest);
 
-            ArgumentCaptor<com.cip.payment_gateway.dto.request.BillerRequest> captor = ArgumentCaptor
-                    .forClass(com.cip.payment_gateway.dto.request.BillerRequest.class);
+            ArgumentCaptor<BillerRequest> captor = ArgumentCaptor
+                    .forClass(BillerRequest.class);
             verify(billerClient).pay(captor.capture());
 
             assertThat(captor.getValue().getOrderId()).isEqualTo("ORDER-001");
@@ -261,13 +281,13 @@ class PaymentServiceTest {
         @DisplayName("Find transaction by unknown id, it will return not found message")
         void whenTransactionNotFound_returnsNotFoundMessage() {
             UUID unknownId = UUID.randomUUID();
-            when(transactionRepository.findById(unknownId)).thenReturn(Optional.empty());
 
-            PaymentResponse response = paymentService.getPayment(unknownId);
+            when(transactionRepository.findById(unknownId))
+                    .thenReturn(Optional.empty());
 
-            assertThat(response.getMessage()).isEqualTo("Payment not found");
-            assertThat(response.getTransactionId()).isNull();
-            assertThat(response.getStatus()).isNull();
+            assertThatThrownBy(() -> paymentService.getPayment(unknownId))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage("Payment not found with ID: " + unknownId);
         }
     }
 }
