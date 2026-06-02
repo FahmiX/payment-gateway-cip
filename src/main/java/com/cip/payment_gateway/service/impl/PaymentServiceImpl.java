@@ -17,6 +17,7 @@ import com.cip.payment_gateway.dto.response.CoreBankResponse;
 import com.cip.payment_gateway.enums.TransactionChannel;
 import com.cip.payment_gateway.enums.TransactionStatus;
 import com.cip.payment_gateway.exception.DuplicateOrderException;
+import com.cip.payment_gateway.exception.ResourceNotFoundException;
 // Feign Clients
 import com.cip.payment_gateway.client.CoreBankFeignClient;
 import com.cip.payment_gateway.client.BillerFeignClient;
@@ -47,12 +48,15 @@ public class PaymentServiceImpl implements PaymentService {
         // Log request data
         log.info("Creating payment for orderId: {}", request.getOrderId());
 
+        // Validate Channel
+        TransactionChannel.from(request.getChannel());
+
         // Validate Duplicate Order ID
         Optional<Transactions> transaction = transactionRepository.findByOrderId(request.getOrderId());
         if (transaction.isPresent()) {
             log.warn("Payment already exists for orderId: {}", request.getOrderId());
 
-            throw new DuplicateOrderException("Payment already processed");
+            throw new DuplicateOrderException("Payment already exists for orderId: " + request.getOrderId());
         }
 
         // Save pending transaction to database
@@ -145,24 +149,55 @@ public class PaymentServiceImpl implements PaymentService {
     // Get payment by ID
     @Override
     public PaymentResponse getPayment(UUID id) {
-        Optional<Transactions> transaction = transactionRepository.findById(id);
-        if (transaction.isEmpty()) {
-            log.warn("Payment not found with ID: {}", id);
+        Transactions transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Payment not found with ID: {}", id);
+                    return new ResourceNotFoundException(
+                            "Payment not found with ID: " + id);
+                });
 
-            return PaymentResponse.builder()
-                    .message("Payment not found")
-                    .build();
-        } else {
-            log.info("Payment found with ID: {}", id);
+        log.info("Payment found with ID: {}", id);
 
-            return PaymentResponse.builder()
-                    .transactionId(transaction.get().getId().toString())
-                    .orderId(transaction.get().getOrderId())
-                    .status(transaction.get().getStatus().name())
-                    .corebankReference(transaction.get().getCorebankReference())
-                    .billerReference(transaction.get().getBillerReference())
-                    .message("Payment found")
-                    .build();
-        }
+        return PaymentResponse.builder()
+                .transactionId(transaction.getId().toString())
+                .orderId(transaction.getOrderId())
+                .status(transaction.getStatus().name())
+                .corebankReference(transaction.getCorebankReference())
+                .billerReference(transaction.getBillerReference())
+                .message("Payment found")
+                .build();
+    }
+
+    // Delete payment (soft delete)
+    @Override
+    @Transactional
+    public PaymentResponse removePayment(String orderId) {
+        // Validasi orderId is founded or not founded
+        Transactions transaction = transactionRepository.findByOrderId(orderId)
+                .orElseThrow(() -> {
+                    log.warn("Payment not found with orderId: {}", orderId);
+                    return new ResourceNotFoundException(
+                            "Payment not found with orderId: " + orderId);
+                });
+
+        // Log Found Transaction
+        log.info("Payment found with orderId: {}", orderId);
+
+        // If orderId is founded, set status to REMOVED
+        transaction.setStatus(TransactionStatus.REMOVED);
+
+        // Save Transaction to database
+        transactionRepository.save(transaction);
+
+        log.info("Payment removed with orderId: {}", orderId);
+
+        return PaymentResponse.builder()
+                .transactionId(transaction.getId().toString())
+                .orderId(transaction.getOrderId())
+                .status(transaction.getStatus().name())
+                .corebankReference(transaction.getCorebankReference())
+                .billerReference(transaction.getBillerReference())
+                .message("Payment with orderId " + orderId + " has been removed")
+                .build();
     }
 }

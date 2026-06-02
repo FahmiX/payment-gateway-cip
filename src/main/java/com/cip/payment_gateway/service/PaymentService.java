@@ -10,4 +10,7 @@ public interface PaymentService {
 
     // Retrieve the status of a transaction
     PaymentResponse getPayment(UUID id);
+
+    // Soft delete a transaction
+    PaymentResponse removePayment(String orderId);
 }

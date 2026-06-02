@@ -46,6 +46,11 @@ spring:
             enabled: false
 
 management:
+    # Info
+    info:
+        env:
+            enabled: true
+
     endpoint:
         health:
             show-details: always
@@ -54,6 +59,12 @@ management:
         web:
             exposure:
                 include: health,info
+
+info:
+    app:
+        name: Payment Gateway
+        version: 1.0.0
+        description: A simple payment gateway application for CIP coding test
 
 logging:
     file:

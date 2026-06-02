@@ -8,6 +8,7 @@ import com.cip.payment_gateway.dto.request.PaymentRequest;
 import com.cip.payment_gateway.dto.response.PaymentResponse;
 // Other imports
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +36,13 @@ public class PaymentController {
     @GetMapping("/{id}")
     public ResponseEntity<PaymentResponse> getPayment(@PathVariable UUID id) {
         PaymentResponse response = paymentService.getPayment(id);
+        return ResponseEntity.ok(response);
+    }
+
+    // DELETE API to remove payment (soft delete)
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<PaymentResponse> removePayment(@PathVariable String orderId) {
+        PaymentResponse response = paymentService.removePayment(orderId);
         return ResponseEntity.ok(response);
     }
 }

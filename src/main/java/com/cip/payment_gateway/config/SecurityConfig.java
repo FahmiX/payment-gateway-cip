@@ -7,6 +7,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+
+import com.cip.payment_gateway.security.CustomAccessDeniedHandler;
+import com.cip.payment_gateway.security.CustomAuthenticationEntryPoint;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,9 +20,12 @@ import java.nio.charset.StandardCharsets;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
         @Value("${spring.security.oauth2.resourceserver.jwt.secret-key}")
         private String secret;
+        private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+        private final CustomAccessDeniedHandler accessDeniedHandler;
 
         @Bean
         SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,6 +42,8 @@ public class SecurityConfig {
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2ResourceServer(oauth2 -> oauth2
+                                                .authenticationEntryPoint(authenticationEntryPoint)
+                                                .accessDeniedHandler(accessDeniedHandler)
                                                 .jwt(jwt -> jwt.decoder(jwtDecoder())));
 
                 return http.build();
